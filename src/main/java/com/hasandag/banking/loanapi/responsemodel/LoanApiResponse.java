@@ -13,6 +13,9 @@ public class LoanApiResponse<T> implements Serializable {
     private transient T data;
     private LoanApiResponseMessage message;
 
+    public LoanApiResponse() {
+    }
+
     public LoanApiResponse(T data, HttpStatus status) {
         this.data = data;
         this.status = status;
