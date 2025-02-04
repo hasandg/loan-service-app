@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
-public class Customer  extends BasePojo{
+public class Customer extends BasePojo {
 
     private String name;
 
