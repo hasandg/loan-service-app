@@ -16,7 +16,6 @@ Backend Loan API for bank employees to manage customer loans with secure authent
 - Create loans with flexible configurations
 - List customer loans and installments
 - Pay loan installments with smart payment logic
-- Role-based authentication (Admin/Customer)
 - Reward/Penalty system for early/late payments
 
 ## Setup and Installation
