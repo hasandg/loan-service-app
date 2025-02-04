@@ -1,32 +1,27 @@
 package com.hasandag.banking.loanapi.mappers;
 
 
-import com.hasandag.banking.loanapi.dto.CustomerDTO;
-import com.hasandag.banking.loanapi.dto.LoanDTO;
 import com.hasandag.banking.loanapi.dto.LoanInstallmentDTO;
-import com.hasandag.banking.loanapi.entity.Customer;
+import com.hasandag.banking.loanapi.dto.LoanResponseDTO;
 import com.hasandag.banking.loanapi.entity.Loan;
 import com.hasandag.banking.loanapi.entity.LoanInstallment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper
 public interface LoanMapper {
+
     LoanMapper INSTANCE = Mappers.getMapper(LoanMapper.class);
 
-    CustomerDTO customerToDTO(Customer customer);
-    Customer dtoToCustomer(CustomerDTO dto);
+    LoanResponseDTO toLoanResponseDTO(Loan loan);
 
-    @Mapping(source = "customer.id", target = "customerId")
-    LoanDTO loanToDTO(Loan loan);
+    List<LoanResponseDTO> toLoanResponseDTOs(List<Loan> loans);
 
-    @Mapping(source = "customerId", target = "customer.id")
-    Loan dtoToLoan(LoanDTO dto);
+    @Mapping(target = "loanId", source = "loan.id")
+    LoanInstallmentDTO toLoanInstallmentDTO(LoanInstallment loanInstallment);
 
-    @Mapping(source = "loan.id", target = "loanId")
-    LoanInstallmentDTO installmentToDTO(LoanInstallment installment);
-
-    @Mapping(source = "loanId", target = "loan.id")
-    LoanInstallment dtoToInstallment(LoanInstallmentDTO dto);
+    List<LoanInstallmentDTO> toLoanInstallmentDTOs(List<LoanInstallment> installments);
 }

@@ -21,10 +21,10 @@ import lombok.experimental.SuperBuilder;
 public abstract class BasePojo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Version
-    private int version;
+    private Long version = 0L; // Set default value for version
 
 }

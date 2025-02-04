@@ -1,6 +1,9 @@
 package com.hasandag.banking.loanapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,14 +19,21 @@ import java.time.LocalDate;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 public class Loan extends BasePojo{
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Customer customer;
+
     private BigDecimal loanAmount;
+
+    private BigDecimal interestRate;
+
     private Integer numberOfInstallments;
+
     private LocalDate createDate;
-    private Boolean isPaid;
+
+    private Boolean isPaid = false;
 
 }

@@ -39,3 +39,47 @@ Backend Loan API for bank employees to manage customer loans with secure authent
 
 ## Testing
 Run tests using: `./mvnw test`
+
+## Sample Requests
+- Create Loan:
+```json
+{
+  "customerId": 1,
+  "loanAmount": 1000,
+  "numberOfInstallments": 12,
+  "interestRate": 0.5
+}
+```
+- List Loans:
+```json
+{
+  "customerId": 1
+}
+```
+```json
+{
+  "customerId": 1,
+  "isPaid": false
+}
+```
+```json
+{
+  "customerId": 1,
+  "isPaid": true
+}
+```
+- List Installments:
+```json
+{
+  "loanId": 1
+}
+```
+
+
+- Pay Installment:
+```json
+{
+  "loanId": 1,
+  "amount": 500
+}
+```

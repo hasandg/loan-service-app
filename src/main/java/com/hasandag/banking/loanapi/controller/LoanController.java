@@ -1,11 +1,13 @@
 package com.hasandag.banking.loanapi.controller;
 
-import com.hasandag.banking.loanapi.dto.LoanDTO;
 import com.hasandag.banking.loanapi.dto.LoanInstallmentDTO;
-import com.hasandag.banking.loanapi.entity.Loan;
-import com.hasandag.banking.loanapi.entity.LoanInstallment;
-import com.hasandag.banking.loanapi.payment.PaymentResult;
+import com.hasandag.banking.loanapi.dto.LoanInstallmentPayRequestDTO;
+import com.hasandag.banking.loanapi.dto.LoanRequestDTO;
+import com.hasandag.banking.loanapi.dto.LoanResponseDTO;
+import com.hasandag.banking.loanapi.dto.PaymentResultDTO;
+import com.hasandag.banking.loanapi.responsemodel.LoanApiResponse;
 import com.hasandag.banking.loanapi.service.LoanService;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,28 +26,27 @@ public class LoanController {
     private final LoanService loanService;
 
     @PostMapping("/create")
-    public Loan createLoan(@RequestBody LoanDTO request) {
+    public ResponseEntity<LoanApiResponse<LoanResponseDTO>> createLoan(@RequestBody LoanRequestDTO request) {
         return loanService.createLoan(
                 request.getCustomerId(),
-                request.getAmount(),
+                request.getLoanAmount(),
                 request.getInterestRate(),
                 request.getNumberOfInstallments()
         );
     }
 
     @GetMapping("/list")
-    public List<Loan> listLoans(@RequestParam Long customerId) {
-        return loanService.findLoansByCustomer(customerId);
+    public ResponseEntity<LoanApiResponse<List<LoanResponseDTO>>> listLoans(@RequestParam @NotNull Long customerId, @RequestParam(required = false) Boolean isPaid) {
+        return loanService.findLoansByCustomer(customerId, isPaid);
     }
 
     @GetMapping("/installments")
-    public ResponseEntity<List<LoanInstallment>> listInstallments(@RequestParam Long loanId) {
-        List<LoanInstallment> installments = loanService.findInstallmentsByLoanId(loanId);
-        return ResponseEntity.ok(installments);
+    public ResponseEntity<LoanApiResponse<List<LoanInstallmentDTO>>> listInstallments(@RequestParam @NotNull Long loanId) {
+        return loanService.findInstallmentsByLoanId(loanId);
     }
 
     @PostMapping("/pay")
-    public PaymentResult payLoan(@RequestBody LoanInstallmentDTO request) {
+    public ResponseEntity<LoanApiResponse<PaymentResultDTO>> payLoan(@RequestBody LoanInstallmentPayRequestDTO request) {
         return loanService.payLoanInstallments(request.getLoanId(), request.getAmount());
     }
 }
