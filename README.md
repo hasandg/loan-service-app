@@ -33,9 +33,10 @@ Backend Loan API for bank employees to manage customer loans with secure authent
 ## Swagger
 - Access Swagger UI at: `http://localhost:8089/swagger-ui.html`
 
-## Authentication
-- Admin: Full system access
-- Customer: Access limited to personal loans
+## profiles like dev, prod, test
+
+- use `./mvnw spring-boot:run -Dspring.profiles.active=dev` to run in dev profile
+- USE `./mvnw spring-boot:run -Dspring.profiles.active=prod` to run in prod profile
 
 ## Testing
 Run tests using: `./mvnw test`
@@ -74,7 +75,6 @@ Run tests using: `./mvnw test`
   "loanId": 1
 }
 ```
-
 
 - Pay Installment:
 ```json
