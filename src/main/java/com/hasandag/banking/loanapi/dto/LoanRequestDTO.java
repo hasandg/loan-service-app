@@ -13,8 +13,8 @@ import java.time.LocalDate;
 @Builder
 public class LoanRequestDTO {
 
-    private final String ZERO_POINT_ONE = "0.1";
-    private final String ZERO_POINT_FIVE = "0.5";
+    private static final String ZERO_POINT_ONE = "0.1";
+    private static final String ZERO_POINT_FIVE = "0.5";
 
     private Long id;
     private Long customerId;

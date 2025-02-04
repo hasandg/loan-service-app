@@ -25,7 +25,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
@@ -121,17 +120,19 @@ public class LoanService {
         BigDecimal installmentAmount = totalAmount.divide(BigDecimal.valueOf(installments), 2, RoundingMode.HALF_UP);
 
         List<LoanInstallment> installmentsList = IntStream.rangeClosed(1, installments)
-                .mapToObj(i -> {
-                    LoanInstallment installment = new LoanInstallment();
-                    installment.setLoan(loan);
-                    installment.setAmount(installmentAmount);
-                    installment.setDueDate(LocalDate.now().plusMonths(i).withDayOfMonth(1));
-                    installment.setIsPaid(false);
-                    return installment;
-                })
-                .collect(Collectors.toList());
+                .mapToObj(i -> getLoanInstallment(loan, i, installmentAmount))
+                .toList();
 
         installmentRepository.saveAll(installmentsList);
+    }
+
+    private static LoanInstallment getLoanInstallment(Loan loan, int i, BigDecimal installmentAmount) {
+        LoanInstallment installment = new LoanInstallment();
+        installment.setLoan(loan);
+        installment.setAmount(installmentAmount);
+        installment.setDueDate(LocalDate.now().plusMonths(i).withDayOfMonth(1));
+        installment.setIsPaid(false);
+        return installment;
     }
 
     private PaymentResultDTO processInstallments(List<LoanInstallment> unpaidInstallments, BigDecimal paymentAmount) {
