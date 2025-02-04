@@ -30,6 +30,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -68,7 +69,7 @@ class LoanServiceTest {
     }
 
     @Test
-    void createLoan_ValidInput_ShouldCreateLoan() {
+    void createLoan_ValidInput_ShouldReturnLoan() {
         when(customerRepository.findById(1L)).thenReturn(Optional.ofNullable(testCustomer));
         when(loanRepository.save(any(Loan.class))).thenReturn(testLoan);
         when(installmentRepository.saveAll(any())).thenReturn(List.of(new LoanInstallment()));
@@ -86,21 +87,32 @@ class LoanServiceTest {
     }
 
     @Test
+    void createLoan_InvalidInput_ShouldReturnBadRequest() {
+        when(customerRepository.findById(1L)).thenReturn(Optional.ofNullable(testCustomer));
+        when(loanRepository.save(any(Loan.class))).thenReturn(testLoan);
+        when(installmentRepository.saveAll(any())).thenReturn(List.of(new LoanInstallment()));
+
+        ResponseEntity<LoanApiResponse<LoanResponseDTO>> createdLoan = loanService.createLoan(
+                1L,
+                BigDecimal.valueOf(50000),
+                BigDecimal.valueOf(0.3),
+                NumberOfInstallments.TWELVE
+        );
+
+        assertNull(Objects.requireNonNull(createdLoan.getBody()).getData());
+        assertEquals(HttpStatus.BAD_REQUEST, createdLoan.getStatusCode());
+    }
+
+    @Test
     void payLoanInstallments_PartialPayment_ShouldProcessCorrectly() {
 
-        LoanInstallment installment1 = new LoanInstallment();
-        installment1.setId(1L);
-        installment1.setLoan(testLoan);
-        installment1.setAmount(BigDecimal.valueOf(500));
-        installment1.setDueDate(LocalDate.now().plusMonths(1));
-        installment1.setIsPaid(false);
-
+        LoanInstallment mockInstallment = createMockInstallment(1L, BigDecimal.valueOf(500));
 
         when(loanRepository.findById(testLoan.getId()))
                 .thenReturn(Optional.ofNullable(testLoan));
 
         when(installmentRepository.findByLoanIdAndIsPaidFalse(testLoan.getId()))
-                .thenReturn(List.of(installment1));
+                .thenReturn(List.of(mockInstallment));
 
         ResponseEntity<LoanApiResponse<PaymentResultDTO>> result = loanService.payLoanInstallments(
                 1L,
@@ -109,6 +121,25 @@ class LoanServiceTest {
 
         assertEquals(1, Objects.requireNonNull(result.getBody()).getData().getInstallmentsPaid());
         verify(installmentRepository).findByLoanIdAndIsPaidFalse(testLoan.getId());
+    }
+
+    @Test
+    void payLoanInstallments_MissingLoan_ShouldReturnEmptyBody() {
+
+        LoanInstallment mockInstallment = createMockInstallment(1L, BigDecimal.valueOf(500));
+
+        when(loanRepository.findById(testLoan.getId()))
+                .thenReturn(Optional.empty());
+
+        when(installmentRepository.findByLoanIdAndIsPaidFalse(testLoan.getId()))
+                .thenReturn(List.of(mockInstallment));
+
+        ResponseEntity<LoanApiResponse<PaymentResultDTO>> result = loanService.payLoanInstallments(
+                1L,
+                BigDecimal.valueOf(500)
+        );
+
+        assertNull(Objects.requireNonNull(result.getBody()).getData());
     }
 
     @Test

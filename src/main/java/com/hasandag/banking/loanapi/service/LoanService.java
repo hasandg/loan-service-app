@@ -67,7 +67,8 @@ public class LoanService {
     @Transactional
     public ResponseEntity<LoanApiResponse<PaymentResultDTO>> payLoanInstallments(Long loanId, BigDecimal paymentAmount) {
         Loan loan = loanRepository.findById(loanId).orElse(null);
-        if (loan == null) {
+
+        if (Objects.isNull(loan)) {
             return createPaymentResultErrorResponse("Loan not found", HttpStatus.NOT_FOUND);
         }
 
