@@ -1,5 +1,6 @@
 package com.hasandag.banking.loanapi.dto;
 
+import com.hasandag.banking.loanapi.enums.NumberOfInstallments;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,7 @@ public class LoanResponseDTO {
     private Long id;
     private BigDecimal loanAmount;
     private BigDecimal interestRate;
-    private Integer numberOfInstallments;
+    private NumberOfInstallments numberOfInstallments;
     private LocalDate createDate;
     private Boolean isPaid;
 }

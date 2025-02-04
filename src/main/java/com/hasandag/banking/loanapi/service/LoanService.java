@@ -6,6 +6,7 @@ import com.hasandag.banking.loanapi.dto.PaymentResultDTO;
 import com.hasandag.banking.loanapi.entity.Customer;
 import com.hasandag.banking.loanapi.entity.Loan;
 import com.hasandag.banking.loanapi.entity.LoanInstallment;
+import com.hasandag.banking.loanapi.enums.NumberOfInstallments;
 import com.hasandag.banking.loanapi.mappers.LoanMapper;
 import com.hasandag.banking.loanapi.repository.CustomerRepository;
 import com.hasandag.banking.loanapi.repository.LoanInstallmentRepository;
@@ -35,14 +36,14 @@ public class LoanService {
     private final LoanInstallmentRepository installmentRepository;
 
     @Transactional
-    public ResponseEntity<LoanApiResponse<LoanResponseDTO>> createLoan(Long customerId, BigDecimal amount, BigDecimal interestRate, int numberOfInstallments) {
+    public ResponseEntity<LoanApiResponse<LoanResponseDTO>> createLoan(Long customerId, BigDecimal amount, BigDecimal interestRate, NumberOfInstallments numberOfInstallments) {
         Customer customer = customerRepository.findById(customerId).orElse(null);
         if (Objects.isNull(customer)) {
             return createLoanErrorResponse("Customer not found", HttpStatus.NOT_FOUND);
         }
 
-        String validationError = validateLoanConditions(customer, amount, interestRate, numberOfInstallments);
-        if (validationError != null) {
+        String validationError = validateLoanConditions(customer, amount, interestRate);
+        if (Objects.nonNull(validationError)) {
             return createErrorResponse("Validation failed", validationError, HttpStatus.BAD_REQUEST);
         }
 
@@ -98,18 +99,18 @@ public class LoanService {
         return new ResponseEntity<>(response, status);
     }
 
-    private Loan saveLoan(Customer customer, BigDecimal amount, BigDecimal interestRate, int numberOfInstallments) {
+    private Loan saveLoan(Customer customer, BigDecimal amount, BigDecimal interestRate, NumberOfInstallments numberOfInstallments) {
         Loan loan = Loan.builder()
                 .customer(customer)
                 .loanAmount(amount)
                 .interestRate(interestRate)
-                .numberOfInstallments(numberOfInstallments)
+                .numberOfInstallments(numberOfInstallments.getValue())
                 .createDate(LocalDate.now())
                 .isPaid(false)
                 .build();
 
         Loan savedLoan = loanRepository.save(loan);
-        createInstallments(savedLoan, amount, interestRate, numberOfInstallments);
+        createInstallments(savedLoan, amount, interestRate, numberOfInstallments.getValue());
         return savedLoan;
     }
 
@@ -165,13 +166,7 @@ public class LoanService {
         return installment.getAmount().multiply(BigDecimal.valueOf(1 + 0.001 * daysDifference));
     }
 
-    private String validateLoanConditions(Customer customer, BigDecimal amount, BigDecimal interestRate, int installments) {
-        if (interestRate.compareTo(BigDecimal.valueOf(0.1)) < 0 || interestRate.compareTo(BigDecimal.valueOf(0.5)) > 0) {
-            return "Interest rate must be between 0.1 and 0.5";
-        }
-        if (installments != 6 && installments != 9 && installments != 12 && installments != 24) {
-            return "Number of installments must be 6, 9, 12, or 24";
-        }
+    private String validateLoanConditions(Customer customer, BigDecimal amount, BigDecimal interestRate) {
         BigDecimal totalLoanAmount = amount.multiply(interestRate.add(BigDecimal.ONE));
         if (customer.getUsedCreditLimit().add(totalLoanAmount).compareTo(customer.getCreditLimit()) > 0) {
             return "Customer does not have enough credit limit";
