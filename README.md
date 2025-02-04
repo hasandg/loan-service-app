@@ -5,9 +5,10 @@ Backend Loan API for bank employees to manage customer loans with secure authent
 
 ## Technology Stack
 - Java 23
-- Spring Boot 3.x
-- Spring Security
+- Spring Boot 3.3.4
+- Swagger
 - H2 Database
+- Mapstruct
 - JUnit 5
 - Mockito
 
@@ -40,6 +41,18 @@ Backend Loan API for bank employees to manage customer loans with secure authent
 
 ## Testing
 Run tests using: `./mvnw test`
+
+## Future Improvements
+
+- add liquibase or flyway for database migration
+- Bonus 1 could be with using Spring Security User instead of custom User, following repos implemented this feature
+- like this repo https://github.com/hasandg/Spring_Boot_Cloud_Security
+- add Spring Cloud, Spring Security, Eureka Discovery Service, Spring Api Gateway,
+- Load Balancer, Spring Cloud Config, Spring Cloud Bus, Feign Client, Resilience4j-Circuit Breaker,
+- Distributed Tracing with Micrometer and Zipkin, Aggregating Log files with ELK Stack,
+- Run Microservice with Docker Container features
+- like this repo https://github.com/hasandg/Bank-Account-Project-with-CQRS-and-Event-Sourcing-Kafka
+- add CQRS, Event Sourcing, DDD(Domain Driven Design), Kafka features
 
 ## Sample Requests
 - Create Loan:
